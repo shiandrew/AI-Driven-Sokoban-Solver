@@ -1,8 +1,7 @@
 import sys
 import os
 from state import SokobanState
-from search import bfs, dfs, evaluate_search_algorithm
-from solver import SokobanSolver, visualize_solution
+from search import bfs, dfs, astar, ids, evaluate_search_algorithm, visualize_solution
 
 def parse_input(file_content: str) -> SokobanState:
     """
@@ -139,13 +138,12 @@ def solve_and_visualize(initial_state: SokobanState, time_limit: float = 60.0, s
     print("Initial state:")
     print_state(initial_state)
     
-    # Create solver for A* algorithm
-    solver = SokobanSolver()
-    
+    # Create algorithms list
     algorithms = [
-        ("A*", lambda state: solver.a_star_search(state)),
+        ("A*", lambda state: astar(state, time_limit=time_limit)),
         ("BFS", lambda state: bfs(state, time_limit=time_limit)),
-        ("DFS", lambda state: dfs(state, time_limit=time_limit))
+        ("DFS", lambda state: dfs(state, time_limit=time_limit)),
+        ("IDS", lambda state: ids(state, time_limit=time_limit))
     ]
     
     solutions = {}
@@ -154,38 +152,24 @@ def solve_and_visualize(initial_state: SokobanState, time_limit: float = 60.0, s
     for name, algorithm in algorithms:
         print(f"Solving with {name}...")
         
-        if name == "A*":
-            # A* returns moves directly
-            result = algorithm(initial_state)
-            if result:
-                solutions[name] = {
-                    'moves': result,
-                    'length': len(result),
-                    'success': True
-                }
-                print(f"✅ Solution found! Path length: {len(result)}")
-            else:
-                solutions[name] = {'success': False}
-                print(f"❌ No solution found with {name}")
+        # All algorithms now return SearchResult objects
+        result = algorithm(initial_state)
+        if result:
+            solutions[name] = {
+                'moves': result.path,
+                'length': len(result.path),
+                'nodes_expanded': result.nodes_expanded,
+                'max_depth': result.max_depth,
+                'time_taken': result.time_taken,
+                'success': True
+            }
+            print(f"✅ Solution found! Path length: {len(result.path)}")
+            print(f"   Nodes expanded: {result.nodes_expanded}")
+            print(f"   Max depth: {result.max_depth}")
+            print(f"   Time taken: {result.time_taken:.2f} seconds")
         else:
-            # BFS/DFS return SearchResult objects
-            result = algorithm(initial_state)
-            if result:
-                solutions[name] = {
-                    'moves': result.path,
-                    'length': len(result.path),
-                    'nodes_expanded': result.nodes_expanded,
-                    'max_depth': result.max_depth,
-                    'time_taken': result.time_taken,
-                    'success': True
-                }
-                print(f"✅ Solution found! Path length: {len(result.path)}")
-                print(f"   Nodes expanded: {result.nodes_expanded}")
-                print(f"   Max depth: {result.max_depth}")
-                print(f"   Time taken: {result.time_taken:.2f} seconds")
-            else:
-                solutions[name] = {'success': False}
-                print(f"❌ No solution found with {name} within {time_limit} seconds")
+            solutions[name] = {'success': False}
+            print(f"❌ No solution found with {name} within {time_limit} seconds")
         print()
     
     # Find the best solution (shortest path among successful solutions)
