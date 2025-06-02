@@ -11,13 +11,13 @@ class SearchResult:
         self.max_depth = max_depth
         self.time_taken = time_taken
 
-def bfs(initial_state: SokobanState, time_limit: float = 60.0) -> Optional[SearchResult]:
+def bfs(initial_state: SokobanState, time_limit: float = 30.0) -> Optional[SearchResult]:
     """
     Breadth-First Search implementation for Sokoban.
     
     Args:
         initial_state: The initial state of the game
-        time_limit: Maximum time in seconds to search (default: 60 seconds)
+        time_limit: Maximum time in seconds to search (default: 30 seconds)
         
     Returns:
         SearchResult containing the solution path and statistics, or None if no solution exists
@@ -58,14 +58,14 @@ def bfs(initial_state: SokobanState, time_limit: float = 60.0) -> Optional[Searc
     time_taken = time.time() - start_time
     return None
 
-def dfs(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 60.0) -> Optional[SearchResult]:
+def dfs(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 30.0) -> Optional[SearchResult]:
     """
     Depth-First Search implementation for Sokoban.
     
     Args:
         initial_state: The initial state of the game
         max_depth: Maximum depth to search (to prevent infinite recursion)
-        time_limit: Maximum time in seconds to search (default: 60 seconds)
+        time_limit: Maximum time in seconds to search (default: 30 seconds)
         
     Returns:
         SearchResult containing the solution path and statistics, or None if no solution exists
@@ -110,13 +110,13 @@ def dfs(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 6
     time_taken = time.time() - start_time
     return None
 
-def astar(initial_state: SokobanState, time_limit: float = 60.0) -> Optional[SearchResult]:
+def astar(initial_state: SokobanState, time_limit: float = 30.0) -> Optional[SearchResult]:
     """
     A* search implementation for Sokoban.
     
     Args:
         initial_state: The initial state of the game
-        time_limit: Maximum time in seconds to search (default: 60 seconds)
+        time_limit: Maximum time in seconds to search (default: 30 seconds)
         
     Returns:
         SearchResult containing the solution path and statistics, or None if no solution exists
@@ -190,14 +190,14 @@ def astar(initial_state: SokobanState, time_limit: float = 60.0) -> Optional[Sea
     time_taken = time.time() - start_time
     return None
 
-def ids(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 60.0) -> Optional[SearchResult]:
+def ids(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 30.0) -> Optional[SearchResult]:
     """
     Iterative Deepening Search implementation for Sokoban.
     
     Args:
         initial_state: The initial state of the game
         max_depth: Maximum depth to search
-        time_limit: Maximum time in seconds to search (default: 60 seconds)
+        time_limit: Maximum time in seconds to search (default: 30 seconds)
         
     Returns:
         SearchResult containing the solution path and statistics, or None if no solution exists
@@ -271,7 +271,7 @@ def _depth_limited_search(initial_state: SokobanState, depth_limit: int,
     # Return a result indicating no solution found at this depth
     return SearchResult([], nodes_expanded, max_depth_reached, 0.0)
 
-def evaluate_search_algorithm(algorithm, initial_state: SokobanState, time_limit: float = 60.0, **kwargs) -> Dict:
+def evaluate_search_algorithm(algorithm, initial_state: SokobanState, time_limit: float = 30.0, **kwargs) -> Dict:
     """
     Evaluate a search algorithm's performance on a given initial state.
     

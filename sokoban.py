@@ -126,7 +126,7 @@ def print_state(state: SokobanState):
     print("\n".join(state.grid))
     print()
 
-def solve_and_visualize(initial_state: SokobanState, time_limit: float = 60.0, show_visualization: bool = True):
+def solve_and_visualize(initial_state: SokobanState, time_limit: float = 30.0, show_visualization: bool = True):
     """
     Solve the puzzle using multiple algorithms and optionally visualize the solution.
     
@@ -199,23 +199,48 @@ def main():
     # Parse command line arguments
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python sokoban.py <map_file>           # Load from file")
-        print("  python sokoban.py <map_file> --no-viz  # Load from file without visualization")
-        print("  python sokoban.py --default            # Use default grid")
+        print("  python sokoban.py <map_file>                    # Load from file")
+        print("  python sokoban.py <map_file> --no-viz           # Load from file without visualization")
+        print("  python sokoban.py <map_file> --time-limit <sec> # Set custom time limit")
+        print("  python sokoban.py --default                     # Use default grid")
         print()
         print("Examples:")
         print("  python sokoban.py grid1.txt")
         print("  python sokoban.py maps/puzzle.txt --no-viz")
-        print("  python sokoban.py --default")
+        print("  python sokoban.py puzzle.txt --time-limit 30")
+        print("  python sokoban.py --default --time-limit 5")
+        print()
+        print("Default time limit: 30 seconds")
         return
     
     # Parse arguments
     show_visualization = True
-    time_limit = 60.0
+    time_limit = 30.0  # Default time limit in seconds
     
+    # Handle --no-viz flag
     if "--no-viz" in sys.argv:
         show_visualization = False
         sys.argv.remove("--no-viz")
+    
+    # Handle --time-limit flag
+    if "--time-limit" in sys.argv:
+        time_limit_index = sys.argv.index("--time-limit")
+        if time_limit_index + 1 < len(sys.argv):
+            try:
+                time_limit = float(sys.argv[time_limit_index + 1])
+                if time_limit <= 0:
+                    print("Error: Time limit must be positive")
+                    return
+                # Remove both the flag and the value
+                sys.argv.pop(time_limit_index + 1)  # Remove the value first
+                sys.argv.pop(time_limit_index)      # Then remove the flag
+                print(f"Using custom time limit: {time_limit} seconds")
+            except (ValueError, IndexError):
+                print("Error: --time-limit requires a valid number")
+                return
+        else:
+            print("Error: --time-limit requires a value")
+            return
     
     if "--default" in sys.argv:
         # Use default grid
