@@ -216,13 +216,15 @@ def ids(initial_state: SokobanState, max_depth: int = 100, time_limit: float = 6
         # Perform depth-limited search
         result = _depth_limited_search(initial_state, depth_limit, start_time, time_limit)
         
-        if result is not None:
+        if result is not None and len(result.path) > 0:
+            # Found a real solution
             total_nodes_expanded += result.nodes_expanded
             time_taken = time.time() - start_time
             return SearchResult(result.path, total_nodes_expanded, result.max_depth, time_taken)
         
         # Add nodes expanded from this iteration
-        total_nodes_expanded += result.nodes_expanded if result else 0
+        if result is not None:
+            total_nodes_expanded += result.nodes_expanded
     
     time_taken = time.time() - start_time
     return None
@@ -266,6 +268,7 @@ def _depth_limited_search(initial_state: SokobanState, depth_limit: int,
             next_state = current_state.move(move)
             stack.append((next_state, path + [move], depth + 1))
     
+    # Return a result indicating no solution found at this depth
     return SearchResult([], nodes_expanded, max_depth_reached, 0.0)
 
 def evaluate_search_algorithm(algorithm, initial_state: SokobanState, time_limit: float = 60.0, **kwargs) -> Dict:
