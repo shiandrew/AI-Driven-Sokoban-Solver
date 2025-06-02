@@ -6,7 +6,7 @@ from solver import SokobanSolver, visualize_solution
 
 def parse_input(file_content: str) -> SokobanState:
     """
-    Parse a Sokoban level from a text file format.
+    Parse a Sokoban grid from a text file format.
     
     The function handles two formats:
     1. Direct map representation:
@@ -22,10 +22,10 @@ def parse_input(file_content: str) -> SokobanState:
        Line 5: player_x player_y (player position)
     
     Args:
-        file_content: String containing the level description
+        file_content: String containing the grid description
         
     Returns:
-        SokobanState representing the level
+        SokobanState representing the grid
     """
     lines = file_content.strip().split('\n')
     
@@ -72,18 +72,18 @@ def parse_input(file_content: str) -> SokobanState:
         grid[player_y-1][player_x-1] = SokobanState.PLAYER
     
     # Convert grid to list of strings
-    level = [''.join(row) for row in grid]
-    return SokobanState(level)
+    grid_data = [''.join(row) for row in grid]
+    return SokobanState(grid_data)
 
-def load_level_from_file(filename: str) -> SokobanState:
+def load_grid_from_file(filename: str) -> SokobanState:
     """
-    Load a Sokoban level from a text file.
+    Load a Sokoban grid from a text file.
     
     Args:
-        filename: Path to the file containing the level
+        filename: Path to the file containing the grid
         
     Returns:
-        SokobanState representing the level
+        SokobanState representing the grid
     """
     try:
         with open(filename, 'r') as file:
@@ -94,18 +94,18 @@ def load_level_from_file(filename: str) -> SokobanState:
     except Exception as e:
         raise ValueError(f"Error loading map from '{filename}': {e}")
 
-def load_level(level_number: int) -> SokobanState:
+def load_predefined_grid(grid_number: int) -> SokobanState:
     """
-    Load a predefined Sokoban level.
+    Load a predefined Sokoban grid.
     
     Args:
-        level_number: The number of the level to load
+        grid_number: The number of the grid to load
         
     Returns:
-        SokobanState representing the level
+        SokobanState representing the grid
     """
-    # Example level (you can add more levels)
-    levels = {
+    # Example grids (you can add more grids)
+    predefined_grids = {
         1: [
             "########",
             "#      #",
@@ -117,14 +117,14 @@ def load_level(level_number: int) -> SokobanState:
         ]
     }
     
-    if level_number not in levels:
-        raise ValueError(f"Level {level_number} not found")
+    if grid_number not in predefined_grids:
+        raise ValueError(f"Grid {grid_number} not found")
         
-    return SokobanState(levels[level_number])
+    return SokobanState(predefined_grids[grid_number])
 
 def print_state(state: SokobanState):
     """Print the current state of the game."""
-    print("\n".join(state.level))
+    print("\n".join(state.grid))
     print()
 
 def solve_and_visualize(initial_state: SokobanState, time_limit: float = 60.0, show_visualization: bool = True):
@@ -217,10 +217,10 @@ def main():
         print("Usage:")
         print("  python sokoban.py <map_file>           # Load from file")
         print("  python sokoban.py <map_file> --no-viz  # Load from file without visualization")
-        print("  python sokoban.py --default            # Use default level")
+        print("  python sokoban.py --default            # Use default grid")
         print()
         print("Examples:")
-        print("  python sokoban.py level1.txt")
+        print("  python sokoban.py grid1.txt")
         print("  python sokoban.py maps/puzzle.txt --no-viz")
         print("  python sokoban.py --default")
         return
@@ -234,12 +234,15 @@ def main():
         sys.argv.remove("--no-viz")
     
     if "--default" in sys.argv:
-        # Use default level
-        print("Loading default level...")
-        initial_state = load_level(1)
+        # Use default grid
+        print("Loading default grid...")
+        initial_state = load_predefined_grid(1)
     else:
         # Load from file
         filename = sys.argv[1]
+        
+        # Normalize the path (handles both forward and backward slashes)
+        filename = os.path.normpath(filename)
         
         # Check if file exists
         if not os.path.exists(filename):
@@ -248,7 +251,7 @@ def main():
         
         print(f"Loading map from: {filename}")
         try:
-            initial_state = load_level_from_file(filename)
+            initial_state = load_grid_from_file(filename)
         except Exception as e:
             print(f"Error: {e}")
             return

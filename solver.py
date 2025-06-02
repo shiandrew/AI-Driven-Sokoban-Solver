@@ -83,4 +83,4 @@ def visualize_solution(initial_state: SokobanState, moves: List[Tuple[int, int]]
     for i, move in enumerate(moves, 1):
         current_state = current_state.move(move)
         print(f"\nStep {i}:")
-        print(current_state) 
+        print(current_state)
