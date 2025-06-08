@@ -2,6 +2,7 @@ import sys
 import os
 from state import SokobanState
 from search import bfs, dfs, astar, ids, evaluate_search_algorithm, visualize_solution
+from deadlock import quick_deadlock_check
 
 def parse_input(file_content: str) -> SokobanState:
     """
@@ -137,6 +138,20 @@ def solve_and_visualize(initial_state: SokobanState, time_limit: float = 30.0, s
     """
     print("Initial state:")
     print_state(initial_state)
+    
+    # First, check for deadlocks
+    print("🔍 Checking for deadlocks...")
+    is_solvable, deadlock_reasons = quick_deadlock_check(initial_state)
+    
+    if not is_solvable:
+        print("❌ PUZZLE IS UNSOLVABLE!")
+        print("Deadlock reasons:")
+        for reason in deadlock_reasons:
+            print(f"  • {reason}")
+        print("\n🚫 Skipping search algorithms - puzzle cannot be solved.")
+        return None
+    else:
+        print("✅ No obvious deadlocks detected - puzzle appears solvable")
     
     # Create algorithms list
     algorithms = [
